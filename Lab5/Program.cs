@@ -178,33 +178,32 @@ public class Program
         return ind;
     }
 
+    public void DeleteMatrixRow(ref int[,] matrix, int index)
+    {
+        int n = matrix.GetLength(0);
+        int[,] temp = new int[n - 1, n];
+
+        for (int i = 0, newRow = 0; i < n; i++)
+        {
+            if (i == index) continue;
+
+            for (int j = 0; j < n; j++)
+                temp[newRow, j] = matrix[i, j];
+
+            newRow++;
+        }
+        matrix = temp;
+    }
+
     public void Task_2_3(ref int[,] B, ref int[,] C)
     {
         // code here
-        int[,] tempB = new int[4, 5];
-        int[,] tempC = new int[5, 6];
-
         int maxB = FindDiagonalMaxIndex(B);
         int maxC = FindDiagonalMaxIndex(C);
 
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 5; j++)
-            {
-                if (i < maxB)
-                    tempB[i, j] = B[i, j];
-                else
-                    tempB[i, j] = B[i + 1, j];
-            }
+        DeleteMatrixRow(ref B, maxB);
+        DeleteMatrixRow(ref C, maxC);
 
-        for (int i = 0; i < 5; i++)
-            for (int j = 0; j < 6; j++)
-                if (i < maxC)
-                    tempC[i, j] = C[i, j];
-                else
-                    tempC[i, j] = C[i + 1, j];
-
-        B = tempB;
-        C = tempC;
         // end
     }
 
@@ -965,12 +964,13 @@ public class Program
         for (double i = a + h; i <= b; i += h)
         {
             double curY = YFunction(i);
-            if (curY > 0 && lastY < 0 || curY < 0 && lastY > 0) 
+            double futureY = i + h <= b ? YFunction(i + h) : curY;
+
+            if ((curY > 0 && lastY < 0) || (curY < 0 && lastY > 0) ||
+                (lastY < 0 && curY == 0 && futureY > 0) || (lastY > 0 && curY == 0 && futureY < 0))
                 cnt++;
             lastY = curY;
         }
-        cnt++;
-
         return cnt;
     }
 
